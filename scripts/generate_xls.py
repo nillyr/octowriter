@@ -571,7 +571,6 @@ class XLSGenerator:
         # Value
         ws.write("D21", "FIXME", self._get_format("regular"))
 
-    #@staticmethod
     def generate_xls(self, filename: str, results: Baseline) -> int:
         try:
             self.wb = xlsxwriter.Workbook(f"{filename}.xlsx")
