@@ -1,0 +1,57 @@
+:doctype: book
+:attribute-missing: warn
+
+:experimental:
+:reproducible:
+:xrefstyle: full
+
+:toc:
+:toclevels: 3
+
+:chapter-label:
+:sectnums: all
+:sectnumlevels: 3
+
+:source-highlighter: rouge
+
+:imagesdir: "MATCH_AND_REPLACE_TEMPLATE_DIR/resources/images"
+
+:!figure-caption:
+:!table-caption:
+
+:filename: MATCH_AND_REPLACE_FILENAME
+
+:document-lang: MATCH_AND_REPLACE_DOCUMENT_LANG
+
+:document-title: MATCH_AND_REPLACE_DOCUMENT_TITLE
+:document-subtitle: MATCH_AND_REPLACE_DOCUMENT_SUBTITLE
+:auditee_name: MATCH_AND_REPLACE_AUDITEE_NAME
+
+:auditee_contact_full_name: MATCH_AND_REPLACE_AUDITEE_CONTACT_FULL_NAME
+:auditee_contact_email: MATCH_AND_REPLACE_AUDITEE_CONTACT_EMAIL
+
+:project_manager_full_name: MATCH_AND_REPLACE_PROJECT_MANAGER_FULL_NAME
+:project_manager_email: MATCH_AND_REPLACE_PROJECT_MANAGER_EMAIL
+
+:authors_list_full_name: MATCH_AND_REPLACE_AUTHORS_LIST_FULL_NAME
+:authors_list_email: MATCH_AND_REPLACE_AUTHORS_LIST_EMAIL
+
+:baseline_name: MATCH_AND_REPLACE_BASELINE_NAME
+
+:revnumber: MATCH_AND_REPLACE_REVNUMBER
+:revdate: MATCH_AND_REPLACE_REVDATE
+
+:confidentiality-level: MATCH_AND_REPLACE_CONFIDENTIALITY_LEVEL
+
+:repo-url: MATCH_AND_REPLACE_REPO_URL
+:project-version: MATCH_AND_REPLACE_PROJECT_VERSION
+
+ifdef::backend-pdf[]
+= {document-title}: {document-subtitle}
+{auditee_name}
+:pdf-themesdir: "MATCH_AND_REPLACE_TEMPLATE_DIR/resources/themes"
+:pdf-theme: custom-theme.yml
+:title-logo-image: image:logoipsum_auditor.svg[align=center,width=350]
+:title-page-background-image: none
+endif::[]
+
