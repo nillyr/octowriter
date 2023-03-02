@@ -3,6 +3,7 @@
 # @link https://github.com/nillyr/octowriter
 # @since 1.0.0b
 
+from pathlib import Path
 import re
 from typing import List
 
@@ -571,17 +572,13 @@ class XLSGenerator:
         # Value
         ws.write("D21", "FIXME", self._get_format("regular"))
 
-    def generate_xls(self, filename: str, results: Baseline) -> int:
-        try:
-            self.wb = xlsxwriter.Workbook(f"{filename}.xlsx")
-            self._init_all_format()
+    def generate_xls(self, filename: str, results: Baseline, output_dir: Path) -> None:
+        self.wb = xlsxwriter.Workbook(f"{output_dir / filename}.xlsx")
+        self._init_all_format()
 
-            self._add_information_worksheet(results.title)
-            self._add_synthesis_worksheet(results.categories)
-            self._write_results(results.categories)
+        self._add_information_worksheet(results.title)
+        self._add_synthesis_worksheet(results.categories)
+        self._write_results(results.categories)
 
-            self.wb.close()
-            self.wb = None
-            return 0
-        except:
-            return 1
+        self.wb.close()
+        self.wb = None
