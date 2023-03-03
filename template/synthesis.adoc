@@ -8,10 +8,9 @@ ifeval::["{document-lang}" == "FR"]
 Le tableau suivant liste l'ensemble des non-conformités identifiées lors de l'audit :
 endif::[]
 
-[cols="<2,^2,^1,^1"]
+[cols="<2,<2,^1,^1"]
 |===
 ^| Section | MATCH_AND_REPLACE_RULE_NAME | MATCH_AND_REPLACE_RULE_LEVEL | MATCH_AND_REPLACE_RULE_SEVERITY
-
 MATCH_AND_REPLACE_NON_CONFORMITY
 |===
 
