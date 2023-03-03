@@ -3,17 +3,17 @@
 # @link https://github.com/nillyr/octowriter
 # @since 1.0.0b
 
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 import platform
 import subprocess
 from typing import List
 
-from octoconf.__init__ import __version__, __url__
+import configparser
 
+from octoconf.__init__ import __version__, __url__
 from octoconf.entities.baseline import Baseline
 from octoconf.entities.category import Category
 from octoconf.entities.rule import Rule
-
 import octoconf.utils.global_values as global_values
 from octoconf.utils.timestamp import today
 
@@ -35,6 +35,28 @@ class PDFGenerator:
         process = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
         output, _ = process.communicate()
         return output.decode("utf-8").strip() == "true"
+
+    def _initialize_report_from_ini(self, filename: str, baseline_name: str, ini_file: Path) -> dict:
+        cfg_parser = configparser.ConfigParser()
+        cfg_parser.read(ini_file)
+
+        report_information: dict = dict()
+        report_information["filename"] = filename
+        report_information["document-title"] = global_values.localize.gettext("compliance_report_title")
+        report_information["auditee_name"] = cfg_parser.get("DEFAULT", "auditee_name")
+        report_information["auditee_contact_full_name"] = cfg_parser.get("DEFAULT", "auditee_contact_full_name")
+        report_information["auditee_contact_email"] = cfg_parser.get("DEFAULT", "auditee_contact_email")
+        report_information["project_manager_full_name"] = cfg_parser.get("DEFAULT", "project_manager_full_name")
+        report_information["project_manager_email"] = cfg_parser.get("DEFAULT", "project_manager_email")
+        report_information["authors_list_full_name"] = cfg_parser.get("DEFAULT", "authors_list_full_name")
+        report_information["authors_list_email"] = cfg_parser.get("DEFAULT", "authors_list_email")
+        report_information["baseline_name"] = baseline_name
+        report_information["revnumber"] = "1.0"
+        report_information["revdate"] = today()
+        report_information["audited_asset"] = cfg_parser.get("DEFAULT", "audited_asset")
+        report_information["confidentiality-level"] = cfg_parser.get("DEFAULT", "confidentiality_level")
+
+        return report_information
 
     def _initialize_report(self, filename: str, baseline_name: str) -> dict:
         report_information: dict = dict()
@@ -232,19 +254,21 @@ endif::[]\n"""
 
     def build_pdf(self,
                     filename: str,
-                    output_directory: str,
-                    build_dir: str,
-                    imagesdir: str = None,
-                    pdf_themesdir: str = None,
+                    output_directory: Path,
+                    build_dir: Path,
+                    header_file: str = None,
+                    imagesdir: Path = None,
+                    pdf_themesdir: Path = None,
                     pdf_theme: str = "custom-theme.yml") -> None:
 
-        imagesdir = imagesdir if not imagesdir is None else self._template_dir
-        pdf_themesdir = pdf_themesdir if not pdf_themesdir is None else self._template_dir
+        imagesdir = imagesdir if imagesdir else Path(self._template_dir / "resources" / "images")
+        pdf_themesdir = pdf_themesdir if pdf_themesdir else Path(self._template_dir / "resources" / "themes")
+        header_file = Path(header_file).name if header_file else self._header_file.name
 
         if platform.system() == "Windows":
-            cmd = ["powershell.exe", f'asciidoctor-pdf -a imagesdir="{imagesdir}/resources/images" -a pdf-themesdir="{pdf_themesdir}/resources/themes" -a pdf-theme="{pdf_theme}" -D "{output_directory}" -o "{filename}.pdf" "{output_directory}/{self._header_file.name}"']
+            cmd = ["powershell.exe", f'asciidoctor-pdf -a imagesdir="{PureWindowsPath(imagesdir)}" -a pdf-themesdir="{PureWindowsPath(pdf_themesdir)}" -a pdf-theme="{PureWindowsPath(pdf_theme).name}" -D "{PureWindowsPath(output_directory)}" -o "{filename}.pdf" "{PureWindowsPath(build_dir / header_file)}"']
         else:
-            cmd = f'asciidoctor-pdf -a imagesdir="{imagesdir}/resources/images" -a pdf-themesdir="{pdf_themesdir}/resources/themes" -a pdf-theme="{pdf_theme}" -D "{output_directory}" -o "{filename}.pdf" "{build_dir}/{self._header_file.name}"'
+            cmd = f'asciidoctor-pdf -a imagesdir="{PurePosixPath(imagesdir)}" -a pdf-themesdir="{PurePosixPath(pdf_themesdir)}" -a pdf-theme="{PurePosixPath(pdf_theme).name}" -D "{PurePosixPath(output_directory)}" -o "{filename}.pdf" "{PurePosixPath(build_dir / header_file)}"'
 
         process = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
         process.communicate()
@@ -253,19 +277,21 @@ endif::[]\n"""
                     filename: str,
                     baseline: Baseline,
                     output_directory: Path,
-                    imagesdir: str = None,
-                    pdf_themesdir: str = None,
+                    ini_file: Path = None,
+                    imagesdir: Path = None,
+                    pdf_themesdir: Path = None,
                     pdf_theme: str = "custom-theme.yml") -> None:
         if not self._is_asciidoctor_pdf_installed():
             return
 
-        imagesdir = imagesdir if not imagesdir is None else self._template_dir
-        pdf_themesdir = pdf_themesdir if not pdf_themesdir is None else self._template_dir
-
         build_dir = output_directory / "build" / "adoc"
         build_dir.mkdir(parents=True, exist_ok=True)
 
-        report_information = self._initialize_report(filename, baseline.title)
+        if ini_file:
+            report_information = self._initialize_report_from_ini(filename, baseline.title, ini_file)
+        else:
+            report_information = self._initialize_report(filename, baseline.title)
+
         self._generate_header_file(report_information, build_dir)
 
         auditee_list_full_name = [x.lstrip().rstrip() for x in report_information["auditee_contact_full_name"].split(';')]
@@ -277,4 +303,4 @@ endif::[]\n"""
         self._generate_synthesis_file(baseline.categories, build_dir)
         self._generate_categories_files(baseline.categories, build_dir)
 
-        self.build_pdf(filename, str(output_directory), str(build_dir), imagesdir, pdf_themesdir, pdf_theme)
+        self.build_pdf(filename, output_directory, build_dir, imagesdir=imagesdir, pdf_themesdir=pdf_themesdir, pdf_theme=pdf_theme)
