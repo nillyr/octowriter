@@ -36,14 +36,14 @@ class PDFGenerator:
         output, _ = process.communicate()
         return output.decode("utf-8").strip() == "true"
 
-    def _initialize_report(self, filename: str, baseline_name: str, audited_asset: str) -> dict:
+    def _initialize_report(self, filename: str, baseline_name: str) -> dict:
         report_information: dict = dict()
 
         while True:
             report_information["filename"] = filename
 
             report_information["document-title"] = global_values.localize.gettext("compliance_report_title")
-            report_information["document-subtitle"] = audited_asset
+            report_information["audited_asset"] = input(f'{global_values.localize.gettext("audited_asset")} : ')
 
             report_information["auditee_name"] = input(f'{global_values.localize.gettext("auditee_name")} : ')
             report_information["auditee_contact_full_name"] = input(f'{global_values.localize.gettext("auditee_contact_full_name")} : ')
@@ -80,7 +80,7 @@ class PDFGenerator:
         header = header.replace("MATCH_AND_REPLACE_DOCUMENT_LANG", global_values.get_locale().upper())
         header = header.replace("MATCH_AND_REPLACE_FILENAME", report_information["filename"])
         header = header.replace("MATCH_AND_REPLACE_DOCUMENT_TITLE", report_information["document-title"])
-        header = header.replace("MATCH_AND_REPLACE_DOCUMENT_SUBTITLE", report_information["document-subtitle"])
+        header = header.replace("MATCH_AND_REPLACE_DOCUMENT_SUBTITLE", report_information["audited_asset"])
         header = header.replace("MATCH_AND_REPLACE_AUDITEE_NAME", report_information["auditee_name"])
         header = header.replace("MATCH_AND_REPLACE_AUDITEE_CONTACT_FULL_NAME", report_information["auditee_contact_full_name"])
         header = header.replace("MATCH_AND_REPLACE_AUDITEE_CONTACT_EMAIL", report_information["auditee_contact_email"])
@@ -252,7 +252,6 @@ endif::[]\n"""
     def generate_pdf(self,
                     filename: str,
                     baseline: Baseline,
-                    audited_asset: str,
                     output_directory: Path,
                     imagesdir: str = None,
                     pdf_themesdir: str = None,
@@ -266,7 +265,7 @@ endif::[]\n"""
         build_dir = output_directory / "build" / "adoc"
         build_dir.mkdir(parents=True, exist_ok=True)
 
-        report_information = self._initialize_report(filename, baseline.title, audited_asset)
+        report_information = self._initialize_report(filename, baseline.title)
         self._generate_header_file(report_information, build_dir)
 
         auditee_list_full_name = [x.lstrip().rstrip() for x in report_information["auditee_contact_full_name"].split(';')]
