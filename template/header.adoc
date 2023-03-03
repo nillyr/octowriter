@@ -12,6 +12,8 @@
 :sectnums: all
 :sectnumlevels: 3
 
+:!sectids:
+
 :source-highlighter: rouge
 
 :imagesdir: "MATCH_AND_REPLACE_TEMPLATE_DIR/resources/images"

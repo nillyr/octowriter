@@ -150,8 +150,7 @@ class PDFGenerator:
         non_conformity_rows = ""
         for category in categories:
             for rule in category.rules:
-                # TODO: what if the title contains accents or special chars
-                non_conformity_rows += f"| <<_{category.name.replace(' ', '_')}>> | <<nc_{rule.id}>> | {global_values.localize.gettext(rule.level)} | {global_values.localize.gettext(rule.severity)} \n"
+                non_conformity_rows += f"| <<{category.category}>> | <<nc_{rule.id}>> | {global_values.localize.gettext(rule.level)} | {global_values.localize.gettext(rule.severity)} \n"
 
         synthesis = synthesis.replace("MATCH_AND_REPLACE_NON_CONFORMITY", non_conformity_rows)
 
@@ -216,7 +215,8 @@ endif::[]\n"""
                                     categories: List[Category],
                                     build_dir: Path) -> None:
         for category in categories:
-            category_file_content = f"== {category.name}\n"
+            category_file_content = f"[#{category.category},reftext={category.name}]\n"
+            category_file_content += f"== {category.name}\n"
             category_file_content += f"{category.description}\n" if category.description is not None else ""
             category_file_content += "\n\n"
 
