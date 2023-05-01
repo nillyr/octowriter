@@ -1,0 +1,114 @@
+extends: "default"
+
+page:
+  margin: [1in, 0.67in, 1in, 0.67in]
+  numbering:
+    start-at: 3
+
+header:
+  border-color: "#C51718"
+  border-width: 0.25
+  font-color: "#808080"
+  font-size: 8
+  height: $base_line_height_length * 5.5
+  recto:
+    left:
+      content: image:logoipsum_auditor.svg[width=125,position=center]
+    center:
+      content: |
+        *{filename}{outfilesuffix}* +
+        {project_manager_full_name} - {project_manager_email}
+    right:
+      content: image:logoipsum_auditee.svg[width=125,position=center]
+  verso:
+    left:
+      content: $header_recto_left_content
+    center:
+      content: $header_recto_center_content
+    right:
+      content: $header_recto_right_content
+
+base:
+  font-color: "#333B3F"
+  font-size: 11
+  font-style: "normal"
+
+heading:
+  chapter:
+    break-before: "always"
+
+  line-height: 1.4
+
+  h2-font-color: "#C00000"
+  h2-font-size: 16
+  h2-font-style: "bold"
+
+  h3-font-color: "#333B3F"
+  h3-font-size: 14
+  h3-font-style: "bold"
+
+  h4-font-color: "#333B3F"
+  h4-font-size: 12
+  h4-font-style: "bold_italic"
+
+  h5-font-color: "#610B0B"
+  h5-font-size: 11
+  h5-font-style: "bold_italic"
+
+  h6-font-color: "#610B0B"
+  h6-font-size: 11
+  h6-font-style: "italic"
+
+caption:
+  font-style: "bold"
+
+table:
+  head:
+    background-color: "#333E4E"
+    font-color: "#FFFFFF"
+    font-style: "bold"
+    text-transform: "uppercase"
+
+ulist:
+  marker-font-color: "#C00000"
+  marker:
+    font-size: 11
+
+link:
+  font-color: "#C00000"
+  text-decoration: "underline"
+  text-decoration-color: "#C00000"
+  text-decoration-width: 0.2
+
+role:
+  # used for conformity
+  compliant:
+    font-color: "#28591C"
+    font-style: "bold"
+
+# used for non-conformity block
+example:
+  border-color: "#C00000"
+  border-width: 1
+  font-size: 11
+
+footer:
+  font-color: "#808080"
+  font-size: 8
+  height: $base_line_height_length * 3.5
+  recto:
+    left:
+      content: ""
+    center:
+      content: "{confidentiality-level}"
+      font-color: "#C00000"
+    right:
+      content: "{chapter-title} | Page {page-number} / {page-count}"
+  verso:
+    left:
+      content: "Page {page-number} / {page-count} | {chapter-title}"
+    center:
+      content: $footer_recto_center_content
+      font-color: "#C00000"
+    right:
+      content: ""

@@ -1,5 +1,5 @@
-custom/*
-!custom/.gitkeep
+#custom/*
+#!custom/.gitkeep
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
