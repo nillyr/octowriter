@@ -172,7 +172,8 @@ class PDFGenerator:
         non_conformity_rows = ""
         for category in categories:
             for rule in category.rules:
-                non_conformity_rows += f"| <<{category.category}>> | <<nc_{rule.id}>> | {global_values.localize.gettext(rule.level)} | {global_values.localize.gettext(rule.severity)} \n"
+                if not rule.compliant:
+                    non_conformity_rows += f"| <<{category.category}>> | <<nc_{rule.id}>> | {global_values.localize.gettext(rule.level)} | {global_values.localize.gettext(rule.severity)} \n"
 
         synthesis = synthesis.replace("MATCH_AND_REPLACE_NON_CONFORMITY", non_conformity_rows)
 
@@ -224,10 +225,10 @@ ifeval::["{document-lang}" == "FR"]
 endif::[]\n"""
         else:
             rule_file_content += """.{0}
-[#nc_{1}, caption="[NC-{2}] - "]
+[#nc_{1}, caption="[NC-{2}] "]
 ====
 {3}
-====\n""".format(rule.title, rule.id, "{counter:non-compliance:001}" ,rule.recommendation)
+====\n""".format(rule.title, rule.id, "{counter:non-compliance:001}", rule.recommendation)
 
         rule_file_content += "\n"
         with open(f"{str(build_dir / rule.id)}.adoc", "w") as file:
