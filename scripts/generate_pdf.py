@@ -23,9 +23,9 @@ class PDFGenerator:
     def __init__(self) -> None:
         self._template_dir = Path(__file__).resolve().parent.parent / "template"
 
-        self._header_file = self._template_dir / "header.adoc"
-        self._introduction_file = self._template_dir / "introduction.adoc"
-        self._synthesis_file = self._template_dir / "synthesis.adoc"
+        self._header_file = self._template_dir / "generic" / "header.adoc"
+        self._introduction_file = self._template_dir / "generic" / "introduction.adoc"
+        self._synthesis_file = self._template_dir / "generic" / "synthesis.adoc"
 
     def _is_asciidoctor_pdf_installed(self) -> bool:
         if platform.system() == "Windows":
@@ -96,7 +96,8 @@ class PDFGenerator:
 
     def _generate_header_file(self,
                                 report_information: dict,
-                                build_dir: Path) -> None:
+                                build_dir: Path,
+                                pdf_theme: str) -> None:
         with open(self._header_file, "r") as file:
             header = file.read()
 
@@ -116,6 +117,7 @@ class PDFGenerator:
         header = header.replace("MATCH_AND_REPLACE_REVDATE", report_information["revdate"])
         header = header.replace("MATCH_AND_REPLACE_CONFIDENTIALITY_LEVEL", report_information["confidentiality-level"])
         header = header.replace("MATCH_AND_REPLACE_TEMPLATE_DIR", str(self._template_dir))
+        header = header.replace("MATCH_AND_REPLACE_PDF_THEME", pdf_theme)
         header = header.replace("MATCH_AND_REPLACE_REPO_URL", __url__)
         header = header.replace("MATCH_AND_REPLACE_PROJECT_VERSION", __version__)
 
@@ -259,13 +261,20 @@ endif::[]\n"""
                     output_directory: Path,
                     build_dir: Path,
                     header_file: str = None,
-                    imagesdir: Path = None,
-                    pdf_themesdir: Path = None,
+                    # imagesdir: Path = None,
+                    # pdf_themesdir: Path = None,
+                    template_name: str = "generic",
                     pdf_theme: str = "custom-theme.yml") -> None:
 
-        imagesdir = imagesdir if imagesdir else Path(self._template_dir / "resources" / "images")
-        pdf_themesdir = pdf_themesdir if pdf_themesdir else Path(self._template_dir / "resources" / "themes")
         header_file = Path(header_file).name if header_file else self._header_file.name
+
+        # deduce dir paths from template name
+        if template_name != "generic":
+            imagesdir = self._template_dir / "custom" / template_name / "resources" / "images"
+            pdf_themesdir = self._template_dir / "custom" / template_name / "resources" / "themes"
+        else:
+            imagesdir = self._template_dir / template_name / "resources" / "images"
+            pdf_themesdir = self._template_dir / template_name / "resources" / "themes"
 
         if platform.system() == "Windows":
             cmd = ["powershell.exe", f'asciidoctor-pdf -a imagesdir="{PureWindowsPath(imagesdir)}" -a pdf-themesdir="{PureWindowsPath(pdf_themesdir)}" -a pdf-theme="{PureWindowsPath(pdf_theme).name}" -D "{PureWindowsPath(output_directory)}" -o "{filename}.pdf" "{PureWindowsPath(build_dir / header_file)}"']
@@ -280,11 +289,16 @@ endif::[]\n"""
                     baseline: Baseline,
                     output_directory: Path,
                     ini_file: Path = None,
-                    imagesdir: Path = None,
-                    pdf_themesdir: Path = None,
-                    pdf_theme: str = "custom-theme.yml") -> None:
+                    template_name: str = "generic",
+                    pdf_theme: str = "default-theme.yml") -> None:
         if not self._is_asciidoctor_pdf_installed():
             return
+
+        if template_name != "generic":
+            # update paths
+            self._header_file = self._template_dir / "custom" / template_name / "header.adoc"
+            self._introduction_file = self._template_dir / "custom" / template_name / "introduction.adoc"
+            self._synthesis_file = self._template_dir / "custom" / template_name / "synthesis.adoc"
 
         build_dir = output_directory / "build" / "adoc"
         build_dir.mkdir(parents=True, exist_ok=True)
@@ -294,7 +308,7 @@ endif::[]\n"""
         else:
             report_information = self._initialize_report(filename, baseline.title)
 
-        self._generate_header_file(report_information, build_dir)
+        self._generate_header_file(report_information, build_dir, pdf_theme)
 
         auditee_list_full_name = [x.lstrip().rstrip() for x in report_information["auditee_contact_full_name"].split(';')]
         auditee_list_email = [x.lstrip().rstrip() for x in report_information["auditee_contact_email"].split(';')]
@@ -305,4 +319,4 @@ endif::[]\n"""
         self._generate_synthesis_file(baseline.categories, build_dir)
         self._generate_categories_files(baseline.categories, build_dir)
 
-        self.build_pdf(filename, output_directory, build_dir, imagesdir=imagesdir, pdf_themesdir=pdf_themesdir, pdf_theme=pdf_theme)
+        self.build_pdf(filename, output_directory, build_dir, template_name=template_name, pdf_theme=pdf_theme)

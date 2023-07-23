@@ -52,7 +52,7 @@ ifdef::backend-pdf[]
 = {document-title}: {document-subtitle}
 {auditee_name}
 :pdf-themesdir: "MATCH_AND_REPLACE_TEMPLATE_DIR/resources/themes"
-:pdf-theme: custom-theme.yml
+:pdf-theme: MATCH_AND_REPLACE_PDF_THEME
 :title-logo-image: image:logoipsum_auditor.svg[align=center,width=350]
 :title-page-background-image: none
 endif::[]
