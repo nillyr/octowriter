@@ -7,6 +7,7 @@
 from pathlib import Path, PurePosixPath, PureWindowsPath
 import platform
 import subprocess
+import sys
 from typing import List
 
 import configparser
@@ -261,8 +262,6 @@ endif::[]\n"""
                     output_directory: Path,
                     build_dir: Path,
                     header_file: str = None,
-                    # imagesdir: Path = None,
-                    # pdf_themesdir: Path = None,
                     template_name: str = "generic",
                     pdf_theme: str = "custom-theme.yml") -> None:
 
@@ -299,6 +298,10 @@ endif::[]\n"""
             self._header_file = self._template_dir / "custom" / template_name / "header.adoc"
             self._introduction_file = self._template_dir / "custom" / template_name / "introduction.adoc"
             self._synthesis_file = self._template_dir / "custom" / template_name / "synthesis.adoc"
+
+            if any(not self._header_file.exists(), not self._introduction_file.exists(), not self._synthesis_file.exists()):
+                print(f"[x] Either 'header.adoc', 'introduction.adoc' or 'synthesis.adoc' file does not exists in the '{template_name}' template folder", file=sys.stderr)
+                return
 
         build_dir = output_directory / "build" / "adoc"
         build_dir.mkdir(parents=True, exist_ok=True)
