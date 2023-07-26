@@ -56,7 +56,7 @@ class PDFGenerator:
         report_information["revnumber"] = "1.0"
         report_information["revdate"] = today()
         report_information["audited_asset"] = cfg_parser.get("DEFAULT", "audited_asset")
-        report_information["confidentiality-level"] = cfg_parser.get("DEFAULT", "confidentiality_level")
+        report_information["classification-level"] = cfg_parser.get("DEFAULT", "classification_level")
 
         return report_information
 
@@ -84,7 +84,7 @@ class PDFGenerator:
             report_information["revnumber"] = "1.0"
             report_information["revdate"] = today()
 
-            report_information["confidentiality-level"] = input(f'{global_values.localize.gettext("classification_level")} : ')
+            report_information["classification-level"] = input(f'{global_values.localize.gettext("classification_level")} : ')
 
             if input(f'{global_values.localize.gettext("init_user_confirmation")} [y/N] : ').upper().strip() == "Y":
                 break
@@ -116,7 +116,7 @@ class PDFGenerator:
         header = header.replace("MATCH_AND_REPLACE_BASELINE_NAME", report_information["baseline_name"])
         header = header.replace("MATCH_AND_REPLACE_REVNUMBER", report_information["revnumber"])
         header = header.replace("MATCH_AND_REPLACE_REVDATE", report_information["revdate"])
-        header = header.replace("MATCH_AND_REPLACE_CONFIDENTIALITY_LEVEL", report_information["confidentiality-level"])
+        header = header.replace("MATCH_AND_REPLACE_CLASSIFICATION_LEVEL", report_information["classification-level"])
         header = header.replace("MATCH_AND_REPLACE_TEMPLATE_DIR", str(self._template_dir))
         header = header.replace("MATCH_AND_REPLACE_PDF_THEME", pdf_theme)
         header = header.replace("MATCH_AND_REPLACE_REPO_URL", __url__)
