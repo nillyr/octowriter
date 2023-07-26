@@ -45,8 +45,15 @@
 
 :classification-level: MATCH_AND_REPLACE_CLASSIFICATION_LEVEL
 
+:auditor-company-name: MATCH_AND_REPLACE_AUDITOR_COMPANY_NAME
+
 :repo-url: MATCH_AND_REPLACE_REPO_URL
 :project-version: MATCH_AND_REPLACE_PROJECT_VERSION
+
+:exclusive-property: Exclusive property of {auditor-company-name}
+ifeval::["{document-lang}" == "FR"]
+:exclusive-property: Propriété exclusive de {auditor-company-name}
+endif::[]
 
 ifdef::backend-pdf[]
 = {document-title}: {document-subtitle}

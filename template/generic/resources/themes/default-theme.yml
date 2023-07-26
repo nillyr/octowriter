@@ -47,7 +47,7 @@ footer:
     left:
       content: ""
     center:
-      content: "{classification-level}"
+      content: "{exclusive-property} - {classification-level}"
     right:
       content: "Page {page-number} / {page-count}"
   verso:

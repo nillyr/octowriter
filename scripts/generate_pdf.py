@@ -57,6 +57,7 @@ class PDFGenerator:
         report_information["revdate"] = today()
         report_information["audited_asset"] = cfg_parser.get("DEFAULT", "audited_asset")
         report_information["classification-level"] = cfg_parser.get("DEFAULT", "classification_level")
+        report_information["auditor-company-name"] = cfg_parser.get("DEFAULT", "auditor_company_name")
 
         return report_information
 
@@ -85,6 +86,8 @@ class PDFGenerator:
             report_information["revdate"] = today()
 
             report_information["classification-level"] = input(f'{global_values.localize.gettext("classification_level")} : ')
+
+            report_information["auditor-company-name"] = input(f'{global_values.localize.gettext("auditor_company_name")} : ')
 
             if input(f'{global_values.localize.gettext("init_user_confirmation")} [y/N] : ').upper().strip() == "Y":
                 break
@@ -117,6 +120,7 @@ class PDFGenerator:
         header = header.replace("MATCH_AND_REPLACE_REVNUMBER", report_information["revnumber"])
         header = header.replace("MATCH_AND_REPLACE_REVDATE", report_information["revdate"])
         header = header.replace("MATCH_AND_REPLACE_CLASSIFICATION_LEVEL", report_information["classification-level"])
+        header = header.replace("MATCH_AND_REPLACE_AUDITOR_COMPANY_NAME", report_information["auditor-company-name"])
         header = header.replace("MATCH_AND_REPLACE_TEMPLATE_DIR", str(self._template_dir))
         header = header.replace("MATCH_AND_REPLACE_PDF_THEME", pdf_theme)
         header = header.replace("MATCH_AND_REPLACE_REPO_URL", __url__)
