@@ -303,7 +303,9 @@ endif::[]\n"""
             self._introduction_file = self._template_dir / "custom" / template_name / "introduction.adoc"
             self._synthesis_file = self._template_dir / "custom" / template_name / "synthesis.adoc"
 
-            if any(not self._header_file.exists(), not self._introduction_file.exists(), not self._synthesis_file.exists()):
+            if not self._header_file.exists() or \
+               not self._introduction_file.exists() or \
+               not self._synthesis_file.exists():
                 print(f"[x] Either 'header.adoc', 'introduction.adoc' or 'synthesis.adoc' file does not exists in the '{template_name}' template folder", file=sys.stderr)
                 return
 
