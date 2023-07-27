@@ -469,35 +469,48 @@ class XLSGenerator:
                 category.name,
                 self._get_format("check"),
             )
-
+            regex = r"(</?x>)|[^a-zàâçéèêëîïôûù0-9\s\-]"
+            category.name = re.sub(
+                regex,
+                "",
+                category.name[0:31],
+                0,
+                re.IGNORECASE,
+            )
             lvl_range = f"'{category.name}'!{xlsxwriter.utility.xl_range(0, 1, 1048575, 1)}"
             results_range = f"'{category.name}'!{xlsxwriter.utility.xl_range(0, 5, 1048575, 5)}"
 
             levels = [
-                f"{lvl_range};\"{global_values.localize.gettext('minimal')}\"",
-                f"{lvl_range};\"{global_values.localize.gettext('intermediary')}\"",
-                f"{lvl_range};\"{global_values.localize.gettext('enhanced')}\"",
-                f"{lvl_range};\"{global_values.localize.gettext('high')}\""
+                f"{lvl_range};\"={global_values.localize.gettext('minimal')}\"",
+                f"{lvl_range};\"={global_values.localize.gettext('intermediary')}\"",
+                f"{lvl_range};\"={global_values.localize.gettext('enhanced')}\"",
+                f"{lvl_range};\"={global_values.localize.gettext('high')}\""
             ]
 
-            success = {f"{results_range};\"{global_values.localize.gettext('success')}\"": levels}
-            failed = {f"{results_range};\"{global_values.localize.gettext('failed')}\"": levels}
+            success = {f"{results_range};\"={global_values.localize.gettext('success')}\"": levels}
+            failed = {f"{results_range};\"={global_values.localize.gettext('failed')}\"": levels}
 
             start, stop = (4, 8)
             for criteria in success:
                 for col in range(start, stop):
+                    # Adding "" as the last parameter force the recalculation on file open
+                    # see: https://xlsxwriter.readthedocs.io/faq.html
                     ws.write_formula(
                         xlsxwriter.utility.xl_rowcol_to_cell(row - 1, col),
-                        "=COUNTIFS(%s; %s)" % (success[criteria][col - start], criteria),
+                        f"=COUNTIFS({success[criteria][col - start]}; {criteria})",
                         self._get_format("check"),
+                        ""
                     )
             start, stop = (stop, 12)
             for criteria in failed:
                 for col in range(start, stop):
+                    # Adding "" as the last parameter force the recalculation on file open
+                    # see: https://xlsxwriter.readthedocs.io/faq.html
                     ws.write_formula(
                         xlsxwriter.utility.xl_rowcol_to_cell(row - 1, col),
-                        "=COUNTIFS(%s; %s)" % (failed[criteria][col - start], criteria),
+                        f"=COUNTIFS({failed[criteria][col - start]}; {criteria})",
                         self._get_format("check"),
+                        ""
                     )
 
         # Get total values
