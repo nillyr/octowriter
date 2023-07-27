@@ -5,6 +5,27 @@ page:
   numbering:
     start-at: 3
 
+header:
+  border-width: 0.25
+  font-size: 8
+  height: $base_line_height_length * 3.5
+  recto:
+    left:
+      content: ""
+    center:
+      content: |
+        *{document-title} - {document-subtitle}* +
+        {classification-level}
+    right:
+      content: ""
+  verso:
+    left:
+      content: ""
+    center:
+      content: $header_recto_center_content
+    right:
+      content: ""
+
 base:
   font-size: 11
   font-style: "normal"
@@ -47,7 +68,9 @@ footer:
     left:
       content: ""
     center:
-      content: "{exclusive-property} - {classification-level}"
+      content: |
+        {classification-level} +
+        {exclusive-property}
     right:
       content: "Page {page-number} / {page-count}"
   verso:
