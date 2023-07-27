@@ -469,15 +469,15 @@ class XLSGenerator:
                 self._get_format("check"),
             )
             regex = r"(</?x>)|[^a-zàâçéèêëîïôûù0-9\s\-]"
-            category.name = re.sub(
+            category_name = re.sub(
                 regex,
                 "",
                 category.name[0:31],
                 0,
                 re.IGNORECASE,
             )
-            lvl_range = f"'{category.name}'!{xlsxwriter.utility.xl_range(0, 1, 1048575, 1)}"
-            results_range = f"'{category.name}'!{xlsxwriter.utility.xl_range(0, 5, 1048575, 5)}"
+            lvl_range = f"'{category_name}'!{xlsxwriter.utility.xl_range(0, 1, 1048575, 1)}"
+            results_range = f"'{category_name}'!{xlsxwriter.utility.xl_range(0, 5, 1048575, 5)}"
 
             levels = [
                 f"{lvl_range};\"={global_values.localize.gettext('minimal')}\"",
