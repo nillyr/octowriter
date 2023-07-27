@@ -8,6 +8,7 @@ from pathlib import Path
 import re
 from typing import List
 
+import configparser
 import xlsxwriter
 
 from octoconf.entities.baseline import Baseline
@@ -375,11 +376,8 @@ class XLSGenerator:
             ws.set_column("C:E", 35)
             ws.set_column("F:F", 20)
 
-            ws.merge_range(
-                "C1:E1",
-                "=%s!D10" % (global_values.localize.gettext("information")),
-                self._get_format("classification_center"),
-            )
+            ws.merge_range("C1:E1", "", self._get_format("classification_center"))
+            ws.write_formula("C1:E1", "=%s!D10" % (global_values.localize.gettext("information")), self._get_format("classification_center"), "")
 
             ws.set_row(2, 25)
             ws.merge_range("B3:F3", category.name, self._get_format("header"))
@@ -437,7 +435,8 @@ class XLSGenerator:
         ws.set_column("B:L", 20)
         ws.set_row(2, 25)
 
-        ws.merge_range("B1:L1", "=%s!D10" % (global_values.localize.gettext("information")), self._get_format("classification_center"))
+        ws.merge_range("B1:L1", "", self._get_format("classification_center"))
+        ws.write_formula("B1:L1", "=%s!D10" % (global_values.localize.gettext("information")), self._get_format("classification_center"), "")
 
         ws.merge_range("B3:L3", global_values.localize.gettext("summary"), self._get_format("header"))
         ws.merge_range(
@@ -529,7 +528,7 @@ class XLSGenerator:
 
         self._add_charts(ws, row + 1)
 
-    def _add_information_worksheet(self, baseline_title: str) -> None:
+    def _add_information_worksheet(self, baseline_title: str, report_information: dict) -> None:
         ws = self.wb.add_worksheet(name=global_values.localize.gettext("information"))
         ws.hide_gridlines(2)
         ws.set_column("A:A", 2)
@@ -550,7 +549,10 @@ class XLSGenerator:
         # Key
         ws.merge_range("B10:C10", global_values.localize.gettext("classification_level"), self._get_format("bold"))
         # Value
-        ws.write("D10", "FIXME", self._get_format("classification"))
+        if "classification-level" in report_information:
+            ws.write("D10", report_information["classification-level"], self._get_format("classification"))
+        else:
+            ws.write("D10", "FIXME", self._get_format("classification"))
 
         # Title
         ws.merge_range("B12:D12", global_values.localize.gettext("general_information"), self._get_format("sub_header"))
@@ -572,25 +574,28 @@ class XLSGenerator:
         ws.write("D16", __url__, self._get_format("regular"))
 
         # Title
-        ws.merge_range("B18:D18", global_values.localize.gettext("audited_equipment"), self._get_format("sub_header"))
+        ws.merge_range("B18:D18", global_values.localize.gettext("audited_asset"), self._get_format("sub_header"))
         # Key
-        ws.merge_range("B19:C19", global_values.localize.gettext("hostname"), self._get_format("bold"))
+        ws.merge_range("B19:C19", global_values.localize.gettext("asset"), self._get_format("bold"))
         # Value
-        ws.write("D19", "FIXME", self._get_format("regular"))
-        # Key
-        ws.merge_range("B20:C20", global_values.localize.gettext("operating_system"), self._get_format("bold"))
-        # Value
-        ws.write("D20", "FIXME", self._get_format("regular"))
-        # Key
-        ws.merge_range("B21:C21", global_values.localize.gettext("version"), self._get_format("bold"))
-        # Value
-        ws.write("D21", "FIXME", self._get_format("regular"))
+        if "audited-asset" in report_information:
+            ws.write("D19", report_information["audited-asset"], self._get_format("regular"))
+        else:
+            ws.write("D19", "FIXME", self._get_format("regular"))
 
-    def generate_xls(self, filename: str, results: Baseline, output_dir: Path) -> None:
+    def generate_xls(self, filename: str, results: Baseline, output_dir: Path, ini_file: Path = None) -> None:
+        report_information: dict = dict()
+        if ini_file:
+            cfg_parser = configparser.ConfigParser()
+            cfg_parser.read(ini_file)
+
+            report_information["audited-asset"] = cfg_parser.get("DEFAULT", "audited_asset")
+            report_information["classification-level"] = cfg_parser.get("DEFAULT", "classification_level")
+
         self.wb = xlsxwriter.Workbook(f"{output_dir / filename}.xlsx")
         self._init_all_format()
 
-        self._add_information_worksheet(results.title)
+        self._add_information_worksheet(results.title, report_information)
         self._add_synthesis_worksheet(results.categories)
         self._write_results(results.categories)
 
