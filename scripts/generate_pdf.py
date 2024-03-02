@@ -27,9 +27,9 @@ class PDFGenerator:
     def __init__(self) -> None:
         self._template_dir = Path(__file__).resolve().parent.parent / "template"
 
-        self._header_file = self._template_dir / "generic" / "header.adoc"
-        self._introduction_file = self._template_dir / "generic" / "introduction.adoc"
-        self._synthesis_file = self._template_dir / "generic" / "synthesis.adoc"
+        self._header_file = self._template_dir / "default" / "header.adoc"
+        self._introduction_file = self._template_dir / "default" / "introduction.adoc"
+        self._synthesis_file = self._template_dir / "default" / "synthesis.adoc"
 
         logger.info(
             f"Init PDFGenerator with template_dir = {self._template_dir}, header_file = {self._header_file}, introduction_file = {self._introduction_file}, synthesis_file = {self._synthesis_file}"
@@ -425,22 +425,22 @@ endif::[]\n"""
         output_directory: Path,
         build_dir: Path,
         header_file: str = None,
-        template_name: str = "generic",
+        theme_dir: str = "default",
         pdf_theme: str = "custom-theme.yml",
     ) -> None:
         header_file = Path(header_file).name if header_file else self._header_file.name
 
         # deduce dir paths from template name
-        if template_name != "generic":
+        if theme_dir != "default":
             imagesdir = (
-                self._template_dir / "custom" / template_name / "resources" / "images"
+                self._template_dir / "custom" / theme_dir / "resources" / "images"
             )
             pdf_themesdir = (
-                self._template_dir / "custom" / template_name / "resources" / "themes"
+                self._template_dir / "custom" / theme_dir / "resources" / "themes"
             )
         else:
-            imagesdir = self._template_dir / template_name / "resources" / "images"
-            pdf_themesdir = self._template_dir / template_name / "resources" / "themes"
+            imagesdir = self._template_dir / theme_dir / "resources" / "images"
+            pdf_themesdir = self._template_dir / theme_dir / "resources" / "themes"
 
         logger.debug(
             f"Running asciidoctor-pdf with the following args: imagesdir = {imagesdir}, pdf_themesdir = {pdf_themesdir}, pdf_theme = {pdf_theme}, output_directory = {output_directory}, filename = {filename}.pdf, header = {str(build_dir / header_file)}"
@@ -462,22 +462,22 @@ endif::[]\n"""
         baseline: Baseline,
         output_directory: Path,
         ini_file: Path = None,
-        template_name: str = "generic",
-        pdf_theme: str = "default-theme.yml",
+        theme_dir: str = "default",
+        pdf_theme: str = "default.yml",
     ) -> None:
         if not self._is_asciidoctor_pdf_installed():
             return
 
-        if template_name != "generic":
+        if theme_dir != "default":
             # update paths
             self._header_file = (
-                self._template_dir / "custom" / template_name / "header.adoc"
+                self._template_dir / "custom" / theme_dir / "header.adoc"
             )
             self._introduction_file = (
-                self._template_dir / "custom" / template_name / "introduction.adoc"
+                self._template_dir / "custom" / theme_dir / "introduction.adoc"
             )
             self._synthesis_file = (
-                self._template_dir / "custom" / template_name / "synthesis.adoc"
+                self._template_dir / "custom" / theme_dir / "synthesis.adoc"
             )
 
             if (
@@ -486,7 +486,7 @@ endif::[]\n"""
                 or not self._synthesis_file.exists()
             ):
                 logger.error(
-                    f"Either 'header.adoc', 'introduction.adoc' or 'synthesis.adoc' file does not exists in the '{template_name}' template folder"
+                    f"Either 'header.adoc', 'introduction.adoc' or 'synthesis.adoc' file does not exists in the '{theme_dir}' template folder"
                 )
                 return
 
@@ -535,6 +535,6 @@ endif::[]\n"""
             filename,
             output_directory,
             build_dir,
-            template_name=template_name,
+            theme_dir=theme_dir,
             pdf_theme=pdf_theme,
         )

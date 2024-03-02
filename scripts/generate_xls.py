@@ -818,3 +818,9 @@ class XLSGenerator:
 
         logger.info("Generating Microsoft Excel file")
         self._generate_microsoft_excel_file(Path(f"{output_dir / filename}.xlsx"))
+
+        logger.info(f"Replacing {output_dir/filename}.xlsx with {output_dir/filename}-ms-excel-compatible.xlsx")
+        target = Path(f"{output_dir / filename}.xlsx")
+        og = Path(f"{output_dir / filename}-ms-excel-compatible.xlsx")
+        og.replace(target)
+
