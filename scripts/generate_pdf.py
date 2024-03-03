@@ -7,6 +7,7 @@
 import logging
 from pathlib import Path, PurePosixPath, PureWindowsPath
 import platform
+import shutil
 import subprocess
 from typing import List
 
@@ -59,6 +60,12 @@ class PDFGenerator:
             "compliance_report_title"
         )
         report_information["auditee_name"] = cfg_parser.get("DEFAULT", "auditee_name")
+
+        try:
+            report_information["auditee_logo_path"] = cfg_parser.get("DEFAULT", "auditee_logo_path")
+        except:
+            logger.exception("The auditee does not have a logo")
+
         report_information["auditee_contact_full_name"] = cfg_parser.get(
             "DEFAULT", "auditee_contact_full_name"
         )
@@ -107,9 +114,15 @@ class PDFGenerator:
             report_information["auditee_name"] = input(
                 f'{global_values.localize.gettext("auditee_name")} : '
             )
+
+            report_information["auditee_logo_path"] = input(
+                f'{global_values.localize.gettext("auditee_logo_path")} : '
+            )
+
             report_information["auditee_contact_full_name"] = input(
                 f'{global_values.localize.gettext("auditee_contact_full_name")} : '
             )
+
             report_information["auditee_contact_email"] = input(
                 f'{global_values.localize.gettext("auditee_contact_email")} : '
             )
@@ -426,7 +439,7 @@ endif::[]\n"""
         build_dir: Path,
         header_file: str = None,
         theme_dir: str = "default",
-        pdf_theme: str = "custom-theme.yml",
+        pdf_theme: str = "default.yml",
     ) -> None:
         header_file = Path(header_file).name if header_file else self._header_file.name
 
@@ -503,6 +516,17 @@ endif::[]\n"""
             )
         else:
             report_information = self._initialize_report(filename, baseline.title)
+
+        # If the user has a custom template with the audited entity's logo, copy it to the images directory
+        # Note: this will overwrite the previous auditee's logo
+        # Hypothesis: the user will rework the report and regenerate it, so keep the pdf theme as simple as possible and avoid making it too complex
+        if theme_dir != "default":
+            try:
+                src = report_information["auditee_logo_path"]
+                dest = self._template_dir / "custom" / theme_dir / "resources" / "images" / "logo_auditee_header.png"
+                shutil.copyfile(str(src), str(dest))
+            except:
+                logger.exception("There is no auditee logo to copy.")
 
         self._generate_header_file(report_information, build_dir, pdf_theme)
 
