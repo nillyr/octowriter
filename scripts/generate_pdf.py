@@ -17,6 +17,7 @@ from octoconf.__init__ import __version__, __url__
 from octoconf.entities.baseline import Baseline
 from octoconf.entities.category import Category
 from octoconf.entities.rule import Rule
+from octoconf.interfaces.generate_pdf import IPDFGenerator
 from octoconf.utils.logger import *
 import octoconf.utils.global_values as global_values
 from octoconf.utils.timestamp import today
@@ -24,7 +25,7 @@ from octoconf.utils.timestamp import today
 logger = logging.getLogger(__name__)
 
 
-class PDFGenerator:
+class PDFGenerator(IPDFGenerator):
     def __init__(self) -> None:
         self._template_dir = Path(__file__).resolve().parent.parent / "template"
 
