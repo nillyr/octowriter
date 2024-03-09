@@ -816,7 +816,7 @@ class XLSGenerator:
         self.wb.close()
         self.wb = None
 
-        logger.info("Generating Microsoft Excel file")
+        logger.info("Generating Microsoft Excel file from previous XLSX and replacing it")
         self._generate_microsoft_excel_file(Path(f"{output_dir / filename}.xlsx"))
 
         logger.info(f"Replacing {output_dir/filename}.xlsx with {output_dir/filename}-ms-excel-compatible.xlsx")
