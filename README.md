@@ -7,21 +7,9 @@
 
 Submodule of the octoconf project.
 
-| :information_source: Information |
-|:-------------------------------------------------------------|
-| This repository is mirrored from a private GitLab instance |
-
 ## Usage
 
-See [octoconf](https://gitlab.internal.lan/octo-project/octoconf "octoconf") ([GitHub link](https://github.com/nillyr/octoconf)) for the usage instructions.
-
-## Maintainer
-
-- Nicolas GRELLETY
-
-## Authors
-
-- Nicolas GRELLETY
+See `octoconf` repository for the usage instructions.
 
 ## Copyright and license
 
