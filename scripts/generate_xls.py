@@ -9,7 +9,7 @@ import logging
 from pathlib import Path
 import re
 import shutil
-from typing import List
+from typing import List, Optional
 import zipfile
 
 import configparser
@@ -785,7 +785,7 @@ class XLSGenerator:
         self._remove_folder(extract_dir)
 
     def generate_xls(
-        self, filename: str, results: Baseline, output_dir: Path, ini_file: Path = None
+        self, filename: str, results: Baseline, output_dir: Path, ini_file: Optional[Path] = None
     ) -> None:
         logger.info("Running XLSX report generation")
         logger.debug(

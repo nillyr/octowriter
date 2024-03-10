@@ -9,7 +9,7 @@ from pathlib import Path, PurePosixPath, PureWindowsPath
 import platform
 import shutil
 import subprocess
-from typing import List
+from typing import List, Optional
 
 import configparser
 
@@ -438,7 +438,7 @@ endif::[]\n"""
         filename: str,
         output_directory: Path,
         build_dir: Path,
-        header_file: str = None,
+        header_file: Optional[str] = None,
         theme_dir: str = "default",
         pdf_theme: str = "default.yml",
     ) -> None:
@@ -475,7 +475,7 @@ endif::[]\n"""
         filename: str,
         baseline: Baseline,
         output_directory: Path,
-        ini_file: Path = None,
+        ini_file: Optional[Path] = None,
         theme_dir: str = "default",
         pdf_theme: str = "default.yml",
     ) -> None:
