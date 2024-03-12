@@ -337,7 +337,8 @@ class PDFGenerator(IPDFGenerator):
         for category in categories:
             for rule in category.rules:
                 if not rule.compliant:
-                    non_conformity_rows += f"| <<{category.category}>> | <<nc_{rule.id}>> | {global_values.localize.gettext(rule.level)} | {global_values.localize.gettext(rule.severity)} \n"
+                    # asciidoc does not like '.' char for references -> replace with '_'
+                    non_conformity_rows += f"| <<{category.category}>> | <<nc_{rule.id.replace('.', '_')}>> | {global_values.localize.gettext(rule.level)} | {global_values.localize.gettext(rule.severity)} \n"
 
         synthesis = synthesis.replace(
             "MATCH_AND_REPLACE_NON_CONFORMITY", non_conformity_rows
@@ -403,7 +404,7 @@ endif::[]\n"""
 ====
 {3}
 ====\n""".format(
-                rule.title, rule.id, "{counter:non-compliance:001}", rule.recommendation
+                rule.title, rule.id.replace('.', '_'), "{counter:non-compliance:001}", rule.recommendation
             )
 
         rule_file_content += "\n"
