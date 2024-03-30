@@ -360,7 +360,7 @@ class PDFGenerator(IPDFGenerator):
             reference_content += f"* {reference}\n"
 
         if reference_content != "":
-            rule_file_content += f'\n{global_values.localize.gettext("see_also")}\n\n'
+            rule_file_content += f'\n*{global_values.localize.gettext("references")}*\n\n'
             rule_file_content += reference_content
 
         rule_file_content += "\n"
